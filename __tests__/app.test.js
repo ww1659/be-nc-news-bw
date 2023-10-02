@@ -49,6 +49,7 @@ describe("api/articles", () => {
       .then((response) => {
         const articles = response.body.articles;
         expect(articles.length).toBe(13);
+        expect(articles[0].comment_count).toBe("2");
         articles.forEach((article) => {
           expect(typeof article.article_id).toBe("number");
           expect(typeof article.title).toBe("string");
@@ -57,6 +58,7 @@ describe("api/articles", () => {
           expect(typeof article.created_at).toBe("string");
           expect(typeof article.votes).toBe("number");
           expect(typeof article.article_img_url).toBe("string");
+          expect(typeof article.comment_count).toBe("string");
           expect(article.hasOwnProperty("body")).toBe(false);
         });
       });
