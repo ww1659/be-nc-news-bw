@@ -3,6 +3,7 @@ const request = require("supertest");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
+const localEndpoints = require("../endpoints.json");
 
 beforeEach(() => {
   return seed(data);
@@ -16,15 +17,7 @@ describe("api", () => {
       .expect(200)
       .then((response) => {
         const endPoints = response.body.endPoints;
-        for (const endpoint in endPoints) {
-          expect(typeof endPoints[endpoint].description).toBe("string");
-          expect(Array.isArray(endPoints[endpoint].queries)).toBe(true);
-          expect(
-            typeof endPoints[endpoint].exampleResponse &&
-              endPoints[endpoint].exampleResponse !== null &&
-              !Array.isArray(endPoints[endpoint].exampleResponse)
-          ).toBe(true);
-        }
+        expect(endPoints).toEqual(localEndpoints);
       });
   });
 });
@@ -48,6 +41,31 @@ describe("api/topics", () => {
   });
 });
 
+describe("api/articles", () => {
+  test("GET:200 returns an array of article objects with corresponding properties", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        expect(articles.length).toBe(13);
+        articles.forEach((article) => {
+          expect(typeof article.article_id).toBe("number");
+          expect(typeof article.title).toBe("string");
+          expect(typeof article.topic).toBe("string");
+          expect(typeof article.author).toBe("string");
+          expect(typeof article.created_at).toBe("string");
+          expect(typeof article.votes).toBe("number");
+          expect(typeof article.article_img_url).toBe("string");
+          expect(article.hasOwnProperty("body")).toBe(false);
+        });
+      });
+  });
+  test("GET:404 returns status 404 for a non-existent path", () => {
+    return request(app).get("/api/article").expect(404);
+  });
+});
+
 describe("api/articles/:article_id", () => {
   test("GET:200 returns an article object with corresponding properties", () => {
     return request(app)
@@ -55,6 +73,16 @@ describe("api/articles/:article_id", () => {
       .expect(200)
       .then((response) => {
         const article = response.body.article;
+        // const dateCreated = new Date(article.created_at);
+        // expect(article[0]).toMatchObject({
+        //   title: "Eight pug gifs that remind me of mitch",
+        //   topic: "mitch",
+        //   author: "icellusedkars",
+        //   body: "some gifs",
+        //   created_at: new Date(1604394720000),
+        //   article_img_url:
+        //     "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        // });
         article.forEach((article) => {
           expect(article.title).toBe("Eight pug gifs that remind me of mitch");
           expect(article.topic).toBe("mitch");
