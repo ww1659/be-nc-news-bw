@@ -4,6 +4,7 @@ const { getTopics } = require("./controllers/topics-controller");
 const { getEndpoints } = require("./controllers/endpoints-controller");
 const { getArticleById } = require("./controllers/articles-controller.js");
 
+
 app.get("/api", getEndpoints);
 
 app.get("/api/topics", getTopics);
