@@ -9,6 +9,26 @@ beforeEach(() => {
 });
 afterAll(() => db.end());
 
+describe("api", () => {
+  test("GET:200 returns an object of available endpoints", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then((response) => {
+        const endPoints = response.body.endPoints;
+        for (const endpoint in endPoints) {
+          expect(typeof endPoints[endpoint].description).toBe("string");
+          expect(Array.isArray(endPoints[endpoint].queries)).toBe(true);
+          expect(
+            typeof endPoints[endpoint].exampleResponse &&
+              endPoints[endpoint].exampleResponse !== null &&
+              !Array.isArray(endPoints[endpoint].exampleResponse)
+          ).toBe(true);
+        }
+      });
+  });
+});
+
 describe("api/topics", () => {
   test("GET:200 returns an array of topic objects with properties of 'slug' and 'description'", () => {
     return request(app)
