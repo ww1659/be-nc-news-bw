@@ -169,15 +169,10 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("POST /api/articles/:article_id/comments", () => {
+describe("POST /api/articles/:article_id/comments", () => {
   test("POST:200 inserts a new comment into the DB and returns this comment to the user", () => {
     const testComment = {
-      username: {
-        username: "butter_bridge",
-        name: "jonny",
-        avatar_url:
-          "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
-      },
+      username: "butter_bridge",
       body: "THIS IS A TEST COMMENT",
     };
     return request(app)
@@ -196,13 +191,38 @@ describe.only("POST /api/articles/:article_id/comments", () => {
         });
       });
   });
+  test("POST:404 returns status 404 and error message when username is not part of the request", () => {
+    const testComment = {
+      body: "THIS IS A TEST COMMENT",
+    };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(testComment)
+      .expect(404)
+      .then((response) => {
+        console.log(response.body);
+        expect(response.body.msg).toBe("no username provided");
+      });
+  });
+  test("POST:404 returns status 404 and error message when username is not part of the request", () => {
+    const testComment = {
+      isCool: true,
+      flavour: "chocolate",
+      username: "butter_bridge",
+      body: "THIS IS A TEST COMMENT",
+    };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(testComment)
+      .expect(404)
+      .then((response) => {
+        console.log(response.body);
+        expect(response.body.msg).toBe("invalid post");
+      });
+  });
   test("POST:404 returns status 404 and an error message if the user does not exist", () => {
     const testComment = {
-      username: {
-        username: "BILLEH",
-        name: "billy_white",
-        avater_url: "https://i.imgflip.com/47ine3.jpg",
-      },
+      username: "BILLEH",
       body: "THIS IS A TEST BODY",
     };
     return request(app)
@@ -215,12 +235,7 @@ describe.only("POST /api/articles/:article_id/comments", () => {
   });
   test("POST:404 returns status 404 and an error message if the article ID does not exist", () => {
     const testComment = {
-      username: {
-        username: "butter_bridge",
-        name: "jonny",
-        avatar_url:
-          "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
-      },
+      username: "butter_bridge",
       body: "THIS IS A TEST COMMENT",
     };
     return request(app)
@@ -233,12 +248,7 @@ describe.only("POST /api/articles/:article_id/comments", () => {
   });
   test("POST:400 returns status 400 and error message for an invalid article id", () => {
     const testComment = {
-      username: {
-        username: "butter_bridge",
-        name: "jonny",
-        avatar_url:
-          "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
-      },
+      username: "butter_bridge",
       body: "THIS IS A TEST COMMENT",
     };
     return request(app)

@@ -1,6 +1,6 @@
 const db = require("../db/connection");
 
-const checkUserExists = async ({ username }) => {
+const checkUserExists = async (username) => {
   const checkUserExistsQuery = `SELECT * FROM users WHERE username = $1;`;
   const newUserExists = await db.query(checkUserExistsQuery, [username]);
 

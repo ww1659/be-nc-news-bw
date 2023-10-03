@@ -54,6 +54,8 @@ exports.selectCommentsByArticleId = (articleId) => {
 };
 
 exports.enterComment = (articleId, newComment) => {
+  const { username, body } = newComment;
+
   const postQuery = `
     INSERT INTO comments
     (body, author, article_id)
@@ -62,13 +64,21 @@ exports.enterComment = (articleId, newComment) => {
     RETURNING *
     ;`;
 
-  return db
-    .query(postQuery, [
-      newComment.body,
-      newComment.username.username,
-      articleId,
-    ])
-    .then((result) => {
+  let validPost = true;
+  for (const key in newComment) {
+    if (key !== "username" && key !== "body") {
+      validPost = false;
+    }
+  }
+
+  console.log(validPost);
+  if (username && validPost) {
+    return db.query(postQuery, [body, username, articleId]).then((result) => {
       return result.rows;
     });
+  } else if (validPost && !username) {
+    return Promise.reject({ status: 404, msg: "no username provided" });
+  } else if (!validPost) {
+    return Promise.reject({ status: 404, msg: "invalid post" });
+  }
 };
