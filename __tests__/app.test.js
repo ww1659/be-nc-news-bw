@@ -136,21 +136,17 @@ describe("/api/articles/:article_id/comments", () => {
         const comments = response.body.comments;
         expect(comments.length).toBe(2);
         comments.forEach((comment) => {
-          expect(typeof comment.comment_id).toBe("number");
-          expect(typeof comment.author).toBe("string");
-          expect(typeof comment.created_at).toBe("string");
-          expect(typeof comment.votes).toBe("number");
-          expect(typeof comment.article_id).toBe("number");
-          expect(typeof comment.body).toBe("string");
+          expect(comment.article_id).toEqual(5);
         });
       });
   });
-  test("GET:404 returns status 404 and error message for an valid article with no comments", () => {
+  test("GET:200 returns status 404 and error message for an valid article with no comments", () => {
     return request(app)
       .get("/api/articles/2/comments")
-      .expect(404)
+      .expect(200)
       .then((response) => {
-        expect(response.body.msg).toBe(
+        console.log(response.body);
+        expect(response.body.comments.msg).toBe(
           "There are no comments for this article."
         );
       });

@@ -46,10 +46,7 @@ exports.selectCommentsByArticleId = (articleId) => {
   return db.query(getCommentsQuery, [articleId]).then((result) => {
     const comments = result.rows;
     if (comments.length === 0) {
-      return Promise.reject({
-        status: 404,
-        msg: "There are no comments for this article.",
-      });
+      return { msg: "There are no comments for this article." };
     } else {
       return comments;
     }
