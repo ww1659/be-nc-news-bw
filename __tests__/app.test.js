@@ -140,7 +140,7 @@ describe("/api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("GET:200 returns status 404 and error message for an valid article with no comments", () => {
+  test("GET:200 returns status 200 and error message for an valid article with no comments", () => {
     return request(app)
       .get("/api/articles/2/comments")
       .expect(200)
