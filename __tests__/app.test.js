@@ -37,7 +37,12 @@ describe("api/topics", () => {
       });
   });
   test("GET:404 returns status 404 for a non-existent path", () => {
-    return request(app).get("/api/topic").expect(404);
+    return request(app)
+      .get("/api/topic")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("path does not exist");
+      });
   });
 });
 
@@ -115,6 +120,52 @@ describe("api/articles/:article_id", () => {
   test("GET:400 returns status 400 and error message for an invalid article id", () => {
     return request(app)
       .get("/api/articles/dog")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid Article Id");
+      });
+  });
+});
+
+describe("/api/articles/:article_id/comments", () => {
+  test("GET:200 returns an array of comments for specific article Id", () => {
+    return request(app)
+      .get("/api/articles/5/comments")
+      .expect(200)
+      .then((response) => {
+        const comments = response.body.comments;
+        expect(comments.length).toBe(2);
+        comments.forEach((comment) => {
+          expect(typeof comment.comment_id).toBe("number");
+          expect(typeof comment.author).toBe("string");
+          expect(typeof comment.created_at).toBe("string");
+          expect(typeof comment.votes).toBe("number");
+          expect(typeof comment.article_id).toBe("number");
+          expect(typeof comment.body).toBe("string");
+        });
+      });
+  });
+  test("GET:404 returns status 404 and error message for an valid article with no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe(
+          "There are no comments for this article."
+        );
+      });
+  });
+  test("GET:404 returns status 404 and error message for a non existent article id", () => {
+    return request(app)
+      .get("/api/articles/23/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article does not exist!");
+      });
+  });
+  test("GET:400 returns status 400 and error message for an invalid article id", () => {
+    return request(app)
+      .get("/api/articles/dog/comments")
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Invalid Article Id");
