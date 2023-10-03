@@ -37,7 +37,12 @@ describe("api/topics", () => {
       });
   });
   test("GET:404 returns status 404 for a non-existent path", () => {
-    return request(app).get("/api/topic").expect(404);
+    return request(app)
+      .get("/api/topic")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("path does not exist");
+      });
   });
 });
 
@@ -115,6 +120,48 @@ describe("api/articles/:article_id", () => {
   test("GET:400 returns status 400 and error message for an invalid article id", () => {
     return request(app)
       .get("/api/articles/dog")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid Article Id");
+      });
+  });
+});
+
+describe("/api/articles/:article_id/comments", () => {
+  test("GET:200 returns an array of comments for specific article Id", () => {
+    return request(app)
+      .get("/api/articles/5/comments")
+      .expect(200)
+      .then((response) => {
+        const comments = response.body.comments;
+        expect(comments.length).toBe(2);
+        comments.forEach((comment) => {
+          expect(comment.article_id).toEqual(5);
+        });
+      });
+  });
+  test("GET:200 returns status 404 and error message for an valid article with no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then((response) => {
+        console.log(response.body);
+        expect(response.body.comments.msg).toBe(
+          "There are no comments for this article."
+        );
+      });
+  });
+  test("GET:404 returns status 404 and error message for a non existent article id", () => {
+    return request(app)
+      .get("/api/articles/23/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article does not exist!");
+      });
+  });
+  test("GET:400 returns status 400 and error message for an invalid article id", () => {
+    return request(app)
+      .get("/api/articles/dog/comments")
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Invalid Article Id");
