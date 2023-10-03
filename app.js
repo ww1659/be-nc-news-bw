@@ -6,6 +6,12 @@ const {
   getArticles,
   getArticleById,
 } = require("./controllers/articles-controller.js");
+const {
+  getNonExistentPathError,
+  psqlErrors,
+  customErrors,
+  serverErrors,
+} = require("./controllers/error-controller");
 
 app.get("/api", getEndpoints);
 
@@ -15,24 +21,15 @@ app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleById);
 
 // psql errors
-app.use((err, req, res, next) => {
-  if (err.code === "22P02") {
-    res.status(400).send({ msg: "Invalid Article Id" });
-  }
-  next(err);
-});
+app.use(psqlErrors);
 
 //custom errors
-app.use((err, req, res, next) => {
-  if (err.status) {
-    res.status(err.status).send({ msg: err.msg });
-  }
-  next(err);
-});
+app.use(customErrors);
 
-//path doesn't exist error handling
-app.use((err, req, res, next) => {
-  res.status(500).send({ msg: "internal server error" });
-});
+//handle server side errors
+app.use(serverErrors);
+
+//non existent path errors
+app.all("*", getNonExistentPathError);
 
 module.exports = app;

@@ -64,7 +64,12 @@ describe("api/articles", () => {
       });
   });
   test("GET:404 returns status 404 for a non-existent path", () => {
-    return request(app).get("/api/article").expect(404);
+    return request(app)
+      .get("/api/article")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("path does not exist");
+      });
   });
 });
 
