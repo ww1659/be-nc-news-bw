@@ -2,7 +2,9 @@ const {
   fetchArticles,
   selectArticle,
   selectCommentsByArticleId,
+  enterComment,
 } = require("../models/articles-model");
+const { checkUserExists } = require("../models/users-model");
 
 exports.getArticles = (req, res, next) => {
   fetchArticles()
@@ -35,6 +37,25 @@ exports.getCommentsByArticleId = (req, res, next) => {
     .then((results) => {
       const comments = results[1];
       res.status(200).send({ comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postComment = (req, res, next) => {
+  const { article_id } = req.params;
+  const newComment = req.body;
+  const newUser = req.body.username;
+
+  return Promise.all([
+    selectArticle(article_id),
+    checkUserExists(newUser),
+    enterComment(article_id, newComment),
+  ])
+    .then((result) => {
+      const comment = result[2];
+      res.status(201).send({ comment });
     })
     .catch((err) => {
       next(err);

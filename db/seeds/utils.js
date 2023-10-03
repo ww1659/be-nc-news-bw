@@ -20,3 +20,13 @@ exports.formatComments = (comments, idLookup) => {
     };
   });
 };
+
+// exports.checkUserExists = async ({ username }) => {
+//   const checkUserExistsQuery = `SELECT * FROM users WHERE username = $1;`;
+//   const newUserExists = await db.query(checkUserExistsQuery, [username]);
+
+//   if (newUserExists.rows.length === 0) {
+//     return Promise.reject({ status: 404, msg: "User not found" });
+//   }
+//   return newUserExists;
+// };

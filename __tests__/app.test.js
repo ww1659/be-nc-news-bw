@@ -168,3 +168,95 @@ describe("/api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("POST:200 inserts a new comment into the DB and returns this comment to the user", () => {
+    const testComment = {
+      username: "butter_bridge",
+      body: "THIS IS A TEST COMMENT",
+    };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(testComment)
+      .expect(201)
+      .then((response) => {
+        const newComment = response.body.comment;
+        expect(newComment[0]).toMatchObject({
+          article_id: 4,
+          author: "butter_bridge",
+          body: expect.any(String),
+          comment_id: 19,
+          created_at: expect.any(String),
+          votes: 0,
+        });
+      });
+  });
+  test("POST:404 returns status 404 and error message when username is not part of the request", () => {
+    const testComment = {
+      body: "THIS IS A TEST COMMENT",
+    };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(testComment)
+      .expect(404)
+      .then((response) => {
+        console.log(response.body);
+        expect(response.body.msg).toBe("no username provided");
+      });
+  });
+  test("POST:404 returns status 404 and error message when username is not part of the request", () => {
+    const testComment = {
+      isCool: true,
+      flavour: "chocolate",
+      username: "butter_bridge",
+      body: "THIS IS A TEST COMMENT",
+    };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(testComment)
+      .expect(404)
+      .then((response) => {
+        console.log(response.body);
+        expect(response.body.msg).toBe("invalid post");
+      });
+  });
+  test("POST:404 returns status 404 and an error message if the user does not exist", () => {
+    const testComment = {
+      username: "BILLEH",
+      body: "THIS IS A TEST BODY",
+    };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(testComment)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("User not found");
+      });
+  });
+  test("POST:404 returns status 404 and an error message if the article ID does not exist", () => {
+    const testComment = {
+      username: "butter_bridge",
+      body: "THIS IS A TEST COMMENT",
+    };
+    return request(app)
+      .post("/api/articles/400/comments")
+      .send(testComment)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article does not exist!");
+      });
+  });
+  test("POST:400 returns status 400 and error message for an invalid article id", () => {
+    const testComment = {
+      username: "butter_bridge",
+      body: "THIS IS A TEST COMMENT",
+    };
+    return request(app)
+      .post("/api/articles/peter/comments")
+      .send(testComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid Article Id");
+      });
+  });
+});
