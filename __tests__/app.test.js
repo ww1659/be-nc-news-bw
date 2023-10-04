@@ -280,7 +280,7 @@ describe("PATCH /api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("POST:404 returns status 404 and an error message if the article ID does not exist", () => {
+  test("PATCH:404 returns status 404 and an error message if the article ID does not exist", () => {
     const testPatch = { incVotes: 10 };
     return request(app)
       .patch("/api/articles/400")
@@ -290,7 +290,7 @@ describe("PATCH /api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("Article does not exist!");
       });
   });
-  test("POST:400 returns status 400 and error message for an invalid article id", () => {
+  test("PATCH:400 returns status 400 and error message for an invalid article id", () => {
     const testPatch = { incVotes: 15 };
     return request(app)
       .patch("/api/articles/peter")
@@ -300,7 +300,7 @@ describe("PATCH /api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("Invalid Article Id");
       });
   });
-  test("POST:404 returns status 404 and error message when incVotes is not part of the request", () => {
+  test("PATCH:404 returns status 404 and error message when incVotes is not part of the request", () => {
     const testPatch = {};
     return request(app)
       .patch("/api/articles/4")
@@ -310,7 +310,7 @@ describe("PATCH /api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("no incVotes provided");
       });
   });
-  test("POST:404 returns status 404 and error message when additional properties are on the patch request", () => {
+  test("PATCH:404 returns status 404 and error message when additional properties are on the patch request", () => {
     const testPatch = { incVotes: 15, testKey: true };
     return request(app)
       .patch("/api/articles/4")

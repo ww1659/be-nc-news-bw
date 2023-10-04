@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { checkUserExists } = require("../db/seeds/utils");
 
 exports.fetchArticles = () => {
   const fetchArticleQuery = `
