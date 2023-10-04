@@ -1,5 +1,8 @@
 exports.psqlErrors = (err, req, res, next) => {
   if (err.code === "22P02") {
+    if (res.req.method === "DELETE") {
+      res.status(400).send({ msg: "invalid comment id" });
+    }
     res.status(400).send({ msg: "Invalid Article Id" });
   }
   next(err);

@@ -15,6 +15,7 @@ const {
   customErrors,
   serverErrors,
 } = require("./controllers/error-controller");
+const { deleteCommentById } = require("./controllers/comments-controller");
 
 app.use(express.json());
 
@@ -27,6 +28,8 @@ app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postComment);
 app.patch("/api/articles/:article_id", updateArticle);
+
+app.delete("/api/comments/:comment_id", deleteCommentById);
 
 // psql errors
 app.use(psqlErrors);
