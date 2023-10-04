@@ -1,6 +1,16 @@
 const db = require("../db/connection");
 
-const checkUserExists = async (username) => {
+exports.fetchUsers = () => {
+  const fetchUsersQuery = `
+  SELECT * FROM users;`;
+
+  return db.query(fetchUsersQuery).then((result) => {
+    const users = result.rows;
+    return users;
+  });
+};
+
+exports.checkUserExists = async (username) => {
   const checkUserExistsQuery = `SELECT * FROM users WHERE username = $1;`;
   const newUserExists = await db.query(checkUserExistsQuery, [username]);
 
@@ -9,8 +19,6 @@ const checkUserExists = async (username) => {
   }
   return newUserExists;
 };
-
-module.exports = { checkUserExists };
 
 // const newUserQuery = `
 //     //   INSERT INTO users
