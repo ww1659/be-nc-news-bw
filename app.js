@@ -7,6 +7,7 @@ const {
   getArticleById,
   getCommentsByArticleId,
   postComment,
+  updateArticle,
 } = require("./controllers/articles-controller.js");
 const {
   getNonExistentPathError,
@@ -25,6 +26,7 @@ app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postComment);
+app.patch("/api/articles/:article_id", updateArticle);
 
 // psql errors
 app.use(psqlErrors);

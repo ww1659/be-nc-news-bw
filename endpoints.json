@@ -79,5 +79,23 @@
         }
       ]
     }
+  },
+  "PATCH /api/articles/:article_id/": {
+    "description": "updates the votes for an article and returns this updated article",
+    "queries": [{ "incVotes": 5 }],
+    "exampleResponse": {
+      "article": [
+        {
+          "article_id": 4,
+          "title": "Student SUES Mitch!",
+          "topic": "mitch",
+          "author": "rogersop",
+          "body": "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
+          "created_at": "1588731240000",
+          "votes": 5,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        }
+      ]
+    }
   }
 }

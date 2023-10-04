@@ -145,7 +145,6 @@ describe("/api/articles/:article_id/comments", () => {
       .get("/api/articles/2/comments")
       .expect(200)
       .then((response) => {
-        console.log(response.body);
         expect(response.body.comments.msg).toBe(
           "There are no comments for this article."
         );
@@ -200,11 +199,10 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(testComment)
       .expect(404)
       .then((response) => {
-        console.log(response.body);
         expect(response.body.msg).toBe("no username provided");
       });
   });
-  test("POST:404 returns status 404 and error message when username is not part of the request", () => {
+  test("POST:404 returns status 404 and error message when there are invalid properties on the request", () => {
     const testComment = {
       isCool: true,
       flavour: "chocolate",
@@ -216,7 +214,6 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(testComment)
       .expect(404)
       .then((response) => {
-        console.log(response.body);
         expect(response.body.msg).toBe("invalid post");
       });
   });
@@ -257,6 +254,72 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Invalid Article Id");
+      });
+  });
+});
+
+describe("PATCH /api/articles/:article_id/comments", () => {
+  test("PATCH:200 updates the votes count for a specified article ID and returns this updated article", () => {
+    const testPatch = { incVotes: 5 };
+    return request(app)
+      .patch("/api/articles/4")
+      .send(testPatch)
+      .expect(200)
+      .then((response) => {
+        const updatedArticle = response.body.article;
+        expect(updatedArticle[0]).toMatchObject({
+          article_id: 4,
+          title: "Student SUES Mitch!",
+          topic: "mitch",
+          author: "rogersop",
+          body: "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
+          created_at: expect.any(String),
+          votes: 5,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("PATCH:404 returns status 404 and an error message if the article ID does not exist", () => {
+    const testPatch = { incVotes: 10 };
+    return request(app)
+      .patch("/api/articles/400")
+      .send(testPatch)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article does not exist!");
+      });
+  });
+  test("PATCH:400 returns status 400 and error message for an invalid article id", () => {
+    const testPatch = { incVotes: 15 };
+    return request(app)
+      .patch("/api/articles/peter")
+      .send(testPatch)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid Article Id");
+      });
+  });
+  test("PATCH:404 returns status 404 and error message when incVotes is not part of the request", () => {
+    const testPatch = {};
+    return request(app)
+      .patch("/api/articles/4")
+      .send(testPatch)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("no incVotes provided");
+      });
+  });
+  test("PATCH:404 returns status 404 and error message when additional properties are on the patch request", () => {
+    const testPatch = { incVotes: 15, testKey: true };
+    return request(app)
+      .patch("/api/articles/4")
+      .send(testPatch)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe(
+          "invalid patch: can only send the property incVotes"
+        );
       });
   });
 });
