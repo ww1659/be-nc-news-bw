@@ -71,7 +71,6 @@ exports.enterComment = (articleId, newComment) => {
     }
   }
 
-  console.log(validPost);
   if (username && validPost) {
     return db.query(postQuery, [body, username, articleId]).then((result) => {
       return result.rows;
@@ -80,5 +79,36 @@ exports.enterComment = (articleId, newComment) => {
     return Promise.reject({ status: 404, msg: "no username provided" });
   } else if (!validPost) {
     return Promise.reject({ status: 404, msg: "invalid post" });
+  }
+};
+
+exports.updateArticleVotes = (articleId, newVote) => {
+  const votes = newVote.incVotes;
+
+  const patchQuery = `
+  UPDATE articles
+  SET votes = votes + $1
+  WHERE article_id = $2
+  RETURNING *
+  ;`;
+
+  let validPatch = true;
+  for (const key in newVote) {
+    if (key !== "incVotes") {
+      validPatch = false;
+    }
+  }
+
+  if (votes && validPatch) {
+    return db.query(patchQuery, [votes, articleId]).then(({ rows }) => {
+      return rows;
+    });
+  } else if (validPatch && !votes) {
+    return Promise.reject({ status: 404, msg: "no incVotes provided" });
+  } else if (!validPatch) {
+    return Promise.reject({
+      status: 404,
+      msg: "invalid patch: can only send the property incVotes",
+    });
   }
 };
