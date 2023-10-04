@@ -16,31 +16,33 @@ const {
   serverErrors,
 } = require("./controllers/error-controller");
 const { deleteCommentById } = require("./controllers/comments-controller");
+const { getUsers } = require("./controllers/users-controller");
 
 app.use(express.json());
 
+//ENDPOINTS
 app.get("/api", getEndpoints);
 
+//TOPICS
 app.get("/api/topics", getTopics);
 
+//ARTICLES
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postComment);
 app.patch("/api/articles/:article_id", updateArticle);
 
+//USERS
+app.get("/api/users", getUsers);
+
+//COMMENTS
 app.delete("/api/comments/:comment_id", deleteCommentById);
 
-// psql errors
+//ERRORS
 app.use(psqlErrors);
-
-//custom errors
 app.use(customErrors);
-
-//handle server side errors
 app.use(serverErrors);
-
-//non existent path errors
 app.all("*", getNonExistentPathError);
 
 module.exports = app;

@@ -326,7 +326,12 @@ describe("PATCH /api/articles/:article_id/comments", () => {
 
 describe("DELETE /api/comments/:comment_id", () => {
   test("DELETE:204 returns status 204 and has deleted corresponding comment", () => {
-    return request(app).delete("/api/comments/3").expect(204);
+    return request(app)
+      .delete("/api/comments/3")
+      .expect(204)
+      .then((response) => {
+        expect(response.body).toEqual({});
+      });
   });
   test("DELETE:404 responds with an appropriate status and error message when given a non-existent comment_id", () => {
     return request(app)
@@ -342,6 +347,31 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("invalid comment id");
+      });
+  });
+});
+
+describe("GET api/users", () => {
+  test("GET:200 returns an array of user objects with properties of 'username' and 'name' and 'avatar_url'", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((response) => {
+        const users = response.body.users;
+        expect(users.length).toBe(4);
+        users.forEach((user) => {
+          expect(typeof user.username).toBe("string");
+          expect(typeof user.name).toBe("string");
+          expect(typeof user.avatar_url).toBe("string");
+        });
+      });
+  });
+  test("GET:404 returns status 404 for a non-existent path", () => {
+    return request(app)
+      .get("/api/user")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("path does not exist");
       });
   });
 });
