@@ -1,20 +1,43 @@
 const db = require("../db/connection");
 const { checkUserExists } = require("../db/seeds/utils");
 
-exports.fetchArticles = () => {
-  const fetchArticleQuery = `
+exports.fetchArticles = (query) => {
+  let baseQuery = `
   SELECT a.article_id, title, topic, a.author, a.created_at, a.votes, article_img_url, COUNT(comment_id) as comment_count
   FROM articles as a
   LEFT JOIN comments as c
-  ON a.article_id = c.article_id
+  ON a.article_id = c.article_id`;
+
+  let endOfQuery = `
   GROUP BY a.article_id, title, topic, a.author, a.created_at, a.votes, article_img_url
   ORDER BY a.created_at DESC
   ;`;
 
-  return db.query(fetchArticleQuery).then((result) => {
-    const articles = result.rows;
-    return articles;
-  });
+  if (query.hasOwnProperty("topic")) {
+    fetchArticleQuery = baseQuery + ` WHERE a.topic = $1 ` + endOfQuery;
+    return db.query(fetchArticleQuery, [query.topic]).then((result) => {
+      const articles = result.rows;
+      if (articles.length === 0) {
+        return Promise.reject({
+          status: 200,
+          msg: "no articles of this topic",
+        });
+      } else {
+        return articles;
+      }
+    });
+  } else if (Object.keys(query).length === 0) {
+    const fetchArticleQuery = baseQuery + endOfQuery;
+    return db.query(fetchArticleQuery).then((result) => {
+      const articles = result.rows;
+      return articles;
+    });
+  } else {
+    return Promise.reject({
+      status: 400,
+      msg: "invalid query parameter",
+    });
+  }
 };
 
 exports.selectArticle = (articleId) => {
