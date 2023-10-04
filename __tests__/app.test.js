@@ -323,3 +323,25 @@ describe("PATCH /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("DELETE:204 returns status 204 and has deleted corresponding comment", () => {
+    return request(app).delete("/api/comments/3").expect(204);
+  });
+  test("DELETE:404 responds with an appropriate status and error message when given a non-existent comment_id", () => {
+    return request(app)
+      .delete("/api/comments/999")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("comment does not exist");
+      });
+  });
+  test("DELETE:400 responds with an appropriate status and error message when given an invalid comment_id", () => {
+    return request(app)
+      .delete("/api/comments/not-a-comment")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("invalid comment id");
+      });
+  });
+});
