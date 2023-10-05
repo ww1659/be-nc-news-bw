@@ -48,6 +48,7 @@ npm init -y
 - Run the following commands:
 
 psql
+
 \l     # This command shows all databases on the local system.
 
 \c nc_news    # This command connects to the database named nc_news.
