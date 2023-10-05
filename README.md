@@ -49,8 +49,11 @@ npm init -y
 
 psql
 \l     # This command shows all databases on the local system.
+
 \c nc_news    # This command connects to the database named nc_news.
+
 \dt    # This command shows all tables in the nc_news database. If you can't see any tables here, try running the seed again.
+
 \q     # This command exits the psql shell.
 
 Once you've confirmed that the seeding is successful, you can start testing:
