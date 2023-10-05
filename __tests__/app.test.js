@@ -85,27 +85,14 @@ describe("api/articles/:article_id", () => {
       .expect(200)
       .then((response) => {
         const article = response.body.article;
-        // const dateCreated = new Date(article.created_at);
-        // expect(article[0]).toMatchObject({
-        //   title: "Eight pug gifs that remind me of mitch",
-        //   topic: "mitch",
-        //   author: "icellusedkars",
-        //   body: "some gifs",
-        //   created_at: new Date(1604394720000),
-        //   article_img_url:
-        //     "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-        // });
-        article.forEach((article) => {
-          expect(article.title).toBe("Eight pug gifs that remind me of mitch");
-          expect(article.topic).toBe("mitch");
-          expect(article.author).toBe("icellusedkars");
-          expect(article.body).toBe("some gifs");
-          expect(article.hasOwnProperty("created_at")).toBe(true);
-          expect(article.article_img_url).toBe(
-            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-          );
-          expect(article.votes).toBe(0);
-          expect(article.article_id).toBe(3);
+        expect(article[0]).toMatchObject({
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          created_at: expect.any(String),
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: expect.any(String),
         });
       });
   });
