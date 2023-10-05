@@ -9,34 +9,23 @@ Before running this project, make sure to add the following files to your file s
 In these files, specify which database you want to connect to by adding the following lines respectively:
 
 For .env.test:
-
-makefile
-
 PGDATABASE=nc_news_test
 
 For .env.development:
-
-makefile
-
 PGDATABASE=nc_news
 
 Hosted Version
-
 You can access the hosted version of the project at bw-news-app.onrender.com.
-Summary
 
+Summary
 This project is an initial attempt at building and deploying a Node API designed for manipulating data for a news website. The database is hosted on Elephant SQL and contains information related to Articles, Users, Comments, and Topics, allowing users to access these various pieces of information. The project has been developed with Test-Driven Development (TDD) to ensure efficient error handling and testing for edge cases. To discover a list of all endpoints, navigate to /api. This will also provide example responses and valid queries.
 Instructions
 
     Initialize the project as a Node project:
 
-    csharp
-
     npm init -y
 
     To run the project, install the required packages and their corresponding versions listed below into your package.json:
-
-json
 
 "devDependencies": {
 "husky": "^8.0.2",
@@ -60,13 +49,11 @@ json
 ]
 }
 
-    All available scripts can be found in the package.json. It's recommended to run the "seed" script first to ensure the database is correctly seeded.
+All available scripts can be found in the package.json. It's recommended to run the "seed" script first to ensure the database is correctly seeded.
 
     To verify that the seeding has worked, follow these steps:
         Open your command line interface (CLI).
         Run the following commands:
-
-    graphql
 
 psql
 \l # This command shows all databases on the local system.
@@ -75,8 +62,6 @@ psql
 \q # This command exits the psql shell.
 
 Once you've confirmed that the seeding is successful, you can start testing:
-
-bash
 
     npm test app
 
