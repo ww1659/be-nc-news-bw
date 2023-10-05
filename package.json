@@ -34,12 +34,14 @@
     "ex": "^0.1.4",
     "express": "^4.18.2",
     "fs.promises": "^0.1.2",
+    "jest-sorted": "^1.0.14",
     "pg": "^8.11.3",
     "supertest": "^6.3.3"
   },
   "jest": {
     "setupFilesAfterEnv": [
-      "jest-extended/all"
+      "jest-extended/all",
+      "jest-sorted"
     ]
   }
 }

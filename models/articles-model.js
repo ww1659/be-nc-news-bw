@@ -2,29 +2,81 @@ const db = require("../db/connection");
 const { checkUserExists } = require("../db/seeds/utils");
 
 exports.fetchArticles = (query) => {
-  let baseQuery = `
+  const validSortBys = {
+    article_id: "article_id",
+    title: "title",
+    topic: "topic",
+    author: "author",
+    created_at: "created_at",
+    votes: "votes",
+    article_img_url: "article_img_url",
+    comment_count: "comment_count",
+  };
+  const validOrderBys = {
+    asc: "ASC",
+    desc: "DESC",
+  };
+
+  const baseQuery = `
   SELECT a.article_id, title, topic, a.author, a.created_at, a.votes, article_img_url, COUNT(comment_id) as comment_count
   FROM articles as a
   LEFT JOIN comments as c
   ON a.article_id = c.article_id`;
-
-  let endOfQuery = `
+  const groupByQuery = `
   GROUP BY a.article_id
-  ORDER BY a.created_at DESC
+  `;
+  const orderByQuery = `
+  ORDER BY created_at DESC
   ;`;
 
-  if (Object.keys(query).length !== 0 && !query.topic) {
+  if (
+    Object.keys(query).length !== 0 &&
+    !query.topic &&
+    !query.sort_by &&
+    !query.order
+  ) {
     return Promise.reject({
       status: 404,
       msg: "path does not exist",
     });
   }
 
-  const topic = query.hasOwnProperty("topic");
-  const fetchArticleQuery =
-    baseQuery + (topic ? ` WHERE a.topic = $1 ` : ``) + endOfQuery;
+  const queryKey = Object.keys(query)[0];
+
+  let fetchArticlesQuery =
+    baseQuery +
+    (queryKey === "topic" ? ` WHERE a.topic = $1 ` : ``) +
+    groupByQuery +
+    orderByQuery;
+
+  if (queryKey === "sort_by") {
+    if (validSortBys[query.sort_by]) {
+      fetchArticlesQuery =
+        baseQuery +
+        groupByQuery +
+        `ORDER BY ${validSortBys[query.sort_by]} DESC;`;
+    } else {
+      return Promise.reject({
+        status: 404,
+        msg: "invalid sorting parameter",
+      });
+    }
+  } else if (queryKey === "order") {
+    if (validOrderBys[query.order]) {
+      fetchArticlesQuery =
+        baseQuery +
+        groupByQuery +
+        `ORDER BY created_at ${validOrderBys[query.order]};`;
+    } else {
+      return Promise.reject({
+        status: 404,
+        msg: "invalid ordering parameter",
+      });
+    }
+  }
+
   return db
-    .query(fetchArticleQuery, topic ? [query.topic] : [])
+    .query(fetchArticlesQuery, queryKey === "topic" ? [query.topic] : [])
     .then((result) => {
       const articles = result.rows;
       return articles;
