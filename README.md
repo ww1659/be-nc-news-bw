@@ -25,12 +25,13 @@ This project is an initial attempt at building and deploying a Node API designed
 ## Instructions
 
 1. Initialize the project as a Node project:
+
 ```
 npm init -y
 ```
 
 
-3. To install the required packages, run the following commands:
+2. To install the required packages, run the following commands:
 
 - For development dependencies:
   ```
@@ -42,12 +43,13 @@ npm init -y
   npm install dotenv ex express fs.promises pg supertest --save
   ```
 
-3. All available scripts can be found in the `package.json`. It's recommended to run the "seed" script first to ensure the database is correctly seeded.
+3. Scripts can be found in the `package.json`. It's recommended to run the "seed" script first to ensure the database is correctly seeded.
 
 4. To verify that the seeding has worked, follow these steps:
  - Open your command line interface (CLI).
  - Run the following commands:
 
+```
  # Enter the psql shell
  psql
 
@@ -62,6 +64,7 @@ npm init -y
 
  # Exit the psql shell
  \q
+```
 
 5. Once you've confirmed that the seeding is successful, you can start testing:
 
