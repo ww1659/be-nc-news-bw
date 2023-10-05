@@ -52,6 +52,7 @@ npm init -y
    "jest-sorted"
  ]
 }
+```json
 
 
 All available scripts can be found in the package.json. It's recommended to run the "seed" script first to ensure the database is correctly seeded.
