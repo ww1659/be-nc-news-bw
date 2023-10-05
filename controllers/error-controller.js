@@ -4,6 +4,10 @@ exports.psqlErrors = (err, req, res, next) => {
       res.status(400).send({ msg: "invalid comment id" });
     }
     res.status(400).send({ msg: "Invalid Article Id" });
+  } else if (err.code === "42601") {
+    res.status(400).send({ msg: "invalid post query" });
+  } else if (err.code === "23503") {
+    res.status(400).send({ msg: "invalid query" });
   }
   next(err);
 };

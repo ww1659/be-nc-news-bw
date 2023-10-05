@@ -4,8 +4,10 @@ const {
   selectCommentsByArticleId,
   enterComment,
   updateArticleVotes,
+  enterArticle,
 } = require("../models/articles-model");
-const { checkUserExists } = require("../models/users-model");
+const { enterNewTopic } = require("../models/topics-model");
+const { checkUserExists, enterNewUser } = require("../models/users-model");
 
 exports.getArticles = (req, res, next) => {
   const query = req.query;
@@ -74,6 +76,24 @@ exports.updateArticle = (req, res, next) => {
     .then((result) => {
       const updatedArticle = result[0];
       res.status(200).send({ article: updatedArticle });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postArticle = (req, res, next) => {
+  const postedArticle = req.body;
+
+  enterArticle(postedArticle)
+    .then((postedArticle) => {
+      return postedArticle;
+    })
+    .then((newArticle) => {
+      return selectArticle(newArticle[0].article_id);
+    })
+    .then((newArticle) => {
+      res.status(201).send({ newArticle });
     })
     .catch((err) => {
       next(err);

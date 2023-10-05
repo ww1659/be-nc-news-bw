@@ -6,3 +6,17 @@ exports.fetchTopics = () => {
     return result.rows;
   });
 };
+
+// exports.enterNewTopic = async (newTopic) => {
+//   const enterNewTopicQuery = `
+//   INSERT INTO topics
+//   (slug)
+//   VALUES
+//   ($1)
+//   RETURNING *;
+//   `;
+//   await db.query(enterNewTopicQuery, [newTopic]).then(({ rows }) => {
+//     const newTopic = rows;
+//     return newTopic;
+//   });
+// };

@@ -10,7 +10,7 @@ beforeEach(() => {
 });
 afterAll(() => db.end());
 
-describe("api", () => {
+describe("GET api", () => {
   test("GET:200 returns an object of available endpoints", () => {
     return request(app)
       .get("/api")
@@ -22,7 +22,7 @@ describe("api", () => {
   });
 });
 
-describe("api/topics", () => {
+describe("GET api/topics", () => {
   test("GET:200 returns an array of topic objects with properties of 'slug' and 'description'", () => {
     return request(app)
       .get("/api/topics")
@@ -46,7 +46,7 @@ describe("api/topics", () => {
   });
 });
 
-describe("api/articles", () => {
+describe("GET api/articles", () => {
   test("GET:200 returns an array of article objects with corresponding properties", () => {
     return request(app)
       .get("/api/articles")
@@ -78,7 +78,128 @@ describe("api/articles", () => {
   });
 });
 
-describe("api/articles/:article_id", () => {
+describe("POST api/articles", () => {
+  test("POST:201 inserts a new article into the DB and returns this article to the user", () => {
+    const testArticle = {
+      author: "butter_bridge",
+      title: "BigGymFreakz",
+      body: "Billeh has started going to the gym to get healthy for tennis",
+      topic: "cats",
+      article_img_url: "any string here",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(testArticle)
+      .expect(201)
+      .then((response) => {
+        const newArticle = response.body.newArticle;
+        expect(newArticle[0]).toMatchObject({
+          article_id: 14,
+          author: "butter_bridge",
+          title: "BigGymFreakz",
+          body: "Billeh has started going to the gym to get healthy for tennis",
+          topic: "cats",
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          comment_count: "0",
+          article_img_url: expect.any(String),
+        });
+      });
+  });
+  test("POST:201 inserts a new article into the DB and returns this article to the user when no img_url is given", () => {
+    const testArticle = {
+      author: "butter_bridge",
+      title: "BigGymFreakz",
+      body: "Billeh has started going to the gym to get healthy for tennis",
+      topic: "cats",
+      article_img_url: "",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(testArticle)
+      .expect(201)
+      .then((response) => {
+        const newArticle = response.body.newArticle;
+        expect(newArticle[0]).toMatchObject({
+          article_id: 14,
+          author: "butter_bridge",
+          title: "BigGymFreakz",
+          body: "Billeh has started going to the gym to get healthy for tennis",
+          topic: "cats",
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          comment_count: "0",
+          article_img_url: expect.any(String),
+        });
+      });
+  });
+  test("POST:400 returns status 400 and error message when author, title, body and topic are not part of the request", () => {
+    const testArticle = {
+      author: "butter_bridge",
+      title: "BigGymFreakz",
+      body: "Billeh has started going to the gym to get healthy for tennis",
+      article_img_url: "any string here",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(testArticle)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("invalid post query");
+      });
+  });
+  test("POST:400 returns status 400 and error message when invalid properties on the post request", () => {
+    const testArticle = {
+      author: "butter_bridge",
+      title: "BigGymFreakz",
+      body: "Billeh has started going to the gym to get healthy for tennis",
+      topic: "cats",
+      article_img_url: "any string here",
+      tennis: "best sport ever no?",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(testArticle)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("invalid post query");
+      });
+  });
+  test("POST:400 returns status 400 and an error message if the user does not exist", () => {
+    const testArticle = {
+      author: "BILLEH",
+      title: "BigGymFreakz",
+      body: "Billeh has started going to the gym to get healthy for tennis",
+      topic: "cats",
+      article_img_url: "any string here",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(testArticle)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("invalid query");
+      });
+  });
+  test("POST:400 returns status 400 and an error message if the topic does not exist", () => {
+    const testArticle = {
+      author: "icellusedkars",
+      title: "BigGymFreakz",
+      body: "Billeh has started going to the gym to get healthy for tennis",
+      topic: "dogs",
+      article_img_url: "any string here",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(testArticle)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("invalid query");
+      });
+  });
+});
+
+describe("GET api/articles/:article_id", () => {
   test("GET:200 returns an article object with corresponding properties", () => {
     return request(app)
       .get("/api/articles/3")
@@ -114,7 +235,7 @@ describe("api/articles/:article_id", () => {
   });
 });
 
-describe("/api/articles/:article_id/comments", () => {
+describe("GET api/articles/:article_id/comments", () => {
   test("GET:200 returns an array of comments for specific article Id", () => {
     return request(app)
       .get("/api/articles/5/comments")
@@ -245,7 +366,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-describe("PATCH /api/articles/:article_id", () => {
+describe("PATCH api/articles/:article_id", () => {
   test("PATCH:200 updates the votes count for a specified article ID and returns this updated article", () => {
     const testPatch = { incVotes: 5 };
     return request(app)
@@ -311,7 +432,7 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
-describe("DELETE /api/comments/:comment_id", () => {
+describe("DELETE api/comments/:comment_id", () => {
   test("DELETE:204 returns status 204 and has deleted corresponding comment", () => {
     return request(app)
       .delete("/api/comments/3")
@@ -338,7 +459,7 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
-describe("PATCH /api/comments/:comment_id", () => {
+describe("PATCH api/comments/:comment_id", () => {
   test("PATCH:200 returns the updated comment with positive increment", () => {
     const testVote = { incVotes: 110 };
     return request(app)

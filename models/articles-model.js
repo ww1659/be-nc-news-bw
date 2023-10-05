@@ -1,5 +1,6 @@
 const db = require("../db/connection");
 const { checkUserExists } = require("../db/seeds/utils");
+const format = require("pg-format");
 
 exports.fetchArticles = (query) => {
   const validSortBys = {
@@ -85,7 +86,7 @@ exports.fetchArticles = (query) => {
 
 exports.selectArticle = (articleId) => {
   const selectArticleQuery = `
-  SELECT a.article_id, title, topic, a.author, a.created_at, a.votes, article_img_url, COUNT(comment_id) as comment_count
+  SELECT a.article_id, title, topic, a.author, a.created_at, a.votes, article_img_url, a.body, COUNT(comment_id) as comment_count
   FROM articles as a
   LEFT JOIN comments as c
   ON a.article_id = c.article_id
@@ -182,4 +183,42 @@ exports.updateArticleVotes = (articleId, newVote) => {
       msg: "invalid patch: can only send the property incVotes",
     });
   }
+};
+
+exports.enterArticle = (newArticle) => {
+  let validPost = true;
+  for (const key in newArticle) {
+    if (
+      key !== "author" &&
+      key !== "title" &&
+      key !== "body" &&
+      key !== "topic" &&
+      key !== "article_img_url"
+    ) {
+      validPost = false;
+    }
+  }
+  if (!validPost) {
+    return Promise.reject({ status: 400, msg: "invalid post query" });
+  }
+
+  const newArticleValues = [];
+  for (const key in newArticle) {
+    newArticleValues.push(newArticle[key]);
+  }
+
+  const postArticleQuery = format(
+    `
+    INSERT INTO articles
+    (author, title, body, topic, article_img_url)
+    VALUES
+    (%L)
+    RETURNING *
+    ;`,
+    newArticleValues
+  );
+
+  return db.query(postArticleQuery).then((result) => {
+    return result.rows;
+  });
 };
