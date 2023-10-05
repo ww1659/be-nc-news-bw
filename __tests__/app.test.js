@@ -402,3 +402,63 @@ describe("QUERY TOPIC api/articles", () => {
       });
   });
 });
+
+describe("SORT / ORDER api/articles", () => {
+  test("GET:200 returns an array of article objects sorted by the article_id query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toBeSortedBy("article_id", {
+          descending: true,
+        });
+      });
+  });
+  test("GET:200 returns an array of article objects sorted by the author query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toBeSortedBy("author", {
+          descending: true,
+        });
+      });
+  });
+  test("GET:200 returns an array of article objects sorted by the comment_count query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=comment_count")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toBeSortedBy("comment_count", {
+          descending: true,
+          coerce: true,
+        });
+      });
+  });
+  test("GET:200 returns an array of article objects in ascending order", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toBeSortedBy("created_at", {
+          ascending: true,
+        });
+      });
+  });
+  test("GET:404 returns 404 and error message when invalid sorting parameter is passed", () => {
+    return request(app)
+      .get("/api/articles?sort_by=JOB")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("invalid sorting parameter");
+      });
+  });
+  test("GET:404 returns 404 and error message when invalid ordering parameter is passed", () => {
+    return request(app)
+      .get("/api/articles?order=UP")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("invalid ordering parameter");
+      });
+  });
+});
