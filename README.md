@@ -10,6 +10,7 @@ Before running this project, make sure to add the following files to your file s
 In these files, specify which database you want to connect to by adding the following lines respectively:
 
 For `.env.test`: PGDATABASE=nc_news_test
+
 For `.env.development`: PGDATABASE=nc_news
 
 
@@ -51,6 +52,7 @@ npm init -y
    "jest-sorted"
  ]
 }
+
 
 All available scripts can be found in the package.json. It's recommended to run the "seed" script first to ensure the database is correctly seeded.
 
