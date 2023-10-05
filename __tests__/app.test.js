@@ -245,7 +245,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-describe("PATCH /api/articles/:article_id/comments", () => {
+describe("PATCH /api/articles/:article_id", () => {
   test("PATCH:200 updates the votes count for a specified article ID and returns this updated article", () => {
     const testPatch = { incVotes: 5 };
     return request(app)
@@ -338,6 +338,75 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
+describe("PATCH /api/comments/:comment_id", () => {
+  test("PATCH:200 returns the updated comment with positive increment", () => {
+    const testVote = { incVotes: 110 };
+    return request(app)
+      .patch("/api/comments/4")
+      .send(testVote)
+      .expect(200)
+      .then((response) => {
+        const updatedComment = response.body.updatedComment;
+        expect(updatedComment[0]).toMatchObject({
+          body: " I carry a log — yes. Is it funny to you? It is not to me.",
+          votes: 10,
+          author: "icellusedkars",
+          article_id: 1,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("PATCH:200 returns the updated comment with negative increment", () => {
+    const testVote = { incVotes: -875 };
+    return request(app)
+      .patch("/api/comments/7")
+      .send(testVote)
+      .expect(200)
+      .then((response) => {
+        const updatedComment = response.body.updatedComment;
+        expect(updatedComment[0]).toMatchObject({
+          body: "Lobster pot",
+          votes: -875,
+          author: "icellusedkars",
+          article_id: 1,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("PATCH:404 returns status 404 and an error message if the comment ID does not exist", () => {
+    const testVote = { incVotes: 10 };
+    return request(app)
+      .patch("/api/comments/400")
+      .send(testVote)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("comment does not exist");
+      });
+  });
+  test("PATCH:404 returns status 404 and error message when incVotes is not part of the request", () => {
+    const testVote = {};
+    return request(app)
+      .patch("/api/comments/4")
+      .send(testVote)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("no incVotes provided");
+      });
+  });
+  test("PATCH:404 returns status 404 and error message when additional properties are on the patch request", () => {
+    const testPatch = { incVotes: 15, testKey: true };
+    return request(app)
+      .patch("/api/comments/4")
+      .send(testPatch)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe(
+          "invalid patch: can only send the property incVotes"
+        );
+      });
+  });
+});
+
 describe("GET api/users", () => {
   test("GET:200 returns an array of user objects with properties of 'username' and 'name' and 'avatar_url'", () => {
     return request(app)
@@ -359,6 +428,31 @@ describe("GET api/users", () => {
       .expect(404)
       .then((response) => {
         expect(response.body.msg).toBe("path does not exist");
+      });
+  });
+});
+
+describe("GET api/users/:username", () => {
+  test("GET:200 returns a single user object with properties of 'username', 'name' and 'avatar_url'", () => {
+    return request(app)
+      .get("/api/users/icellusedkars")
+      .expect(200)
+      .then((response) => {
+        const user = response.body.user;
+        expect(user[0]).toMatchObject({
+          username: "icellusedkars",
+          name: "sam",
+          avatar_url:
+            "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4",
+        });
+      });
+  });
+  test("GET:404 returns status 404 and error message for a non-existent username", () => {
+    return request(app)
+      .get("/api/users/billeh")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("user does not exist");
       });
   });
 });
