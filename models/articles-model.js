@@ -38,7 +38,7 @@ exports.selectArticle = (articleId) => {
   LEFT JOIN comments as c
   ON a.article_id = c.article_id
   WHERE a.article_id = $1
-  GROUP BY a.article_id, title, topic, a.author, a.created_at, a.votes, article_img_url
+  GROUP BY a.article_id
   ORDER BY a.created_at DESC
   ;`;
   return db.query(selectArticleQuery, [articleId]).then((result) => {

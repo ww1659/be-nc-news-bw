@@ -1,13 +1,69 @@
-# Northcoders News API
+BW News API
+Setup
 
-Good day! Before running this project you will need to add the following files to your file system:
+Before running this project, make sure to add the following files to your file system:
 
-.env.test
-.env.development
+    .env.test
+    .env.development
 
-In these files, you will specify which database you want to connect to by writing the following into each file respectively:
+In these files, specify which database you want to connect to by adding the following lines respectively:
 
-PGDATABASE=nc_news_test (write this line into the .env.test file)
-PGDATABASE=nc_news (write this line into the .env.development file)
+In .env.test: PGDATABASE=nc_news_test
 
-Cheers!
+In .env.development: PGDATABASE=nc_news
+
+Hosted Version
+
+You can access the hosted version of the project at bw-news-app.onrender.com.
+Summary
+
+This project is an initial attempt at building and deploying a Node API designed for manipulating data for a news website. The database is hosted on Elephant SQL and contains information related to Articles, Users, Comments, and Topics, allowing users to access these various pieces of information. The project has been developed with Test-Driven Development (TDD) to ensure efficient error handling and testing for edge cases. To discover a list of all endpoints, navigate to /api. This will also provide example responses and valid queries.
+Instructions
+
+    Initialize the project as a Node project:
+
+    npm init -y
+
+    To run the project, install the required packages and their corresponding versions listed below into your package.json:
+
+"devDependencies": {
+"husky": "^8.0.2",
+"jest": "^27.5.1",
+"jest-extended": "^2.0.0",
+"jest-sorted": "^1.0.14",
+"pg-format": "^1.0.4"
+},
+"dependencies": {
+"dotenv": "^16.3.1",
+"ex": "^0.1.4",
+"express": "^4.18.2",
+"fs.promises": "^0.1.2",
+"pg": "^8.11.3",
+"supertest": "^6.3.3"
+},
+"jest": {
+"setupFilesAfterEnv": [
+"jest-extended/all",
+"jest-sorted"
+]
+}
+
+All available scripts can be found in the package.json. It's recommended to run the "seed" script first to ensure the database is correctly seeded.
+
+    To verify that the seeding has worked, follow these steps:
+        Open your command line interface (CLI).
+        Run the following commands:
+
+psql
+\l # This command shows all databases on the local system.
+\c nc_news # This command connects to the database named nc_news.
+\dt # This command shows all tables in the nc_news database. If you can't see any tables here, try running the seed again.
+\q # This command exits the psql shell.
+
+Once you've confirmed that the seeding is successful, you can start testing:
+
+    npm test app
+
+    This command tests your application (app.js) and all relevant endpoints. It also seeds the test database before each test.
+
+Cheers! You're now ready to use and test your Node API project.
