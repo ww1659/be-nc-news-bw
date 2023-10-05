@@ -28,31 +28,24 @@ This project is an initial attempt at building and deploying a Node API designed
 npm init -y
 
 
-2. To run the project, install the required packages and their corresponding versions listed below into your `package.json`:
+2. To install the required packages, run the following commands:
 
-```json
-"devDependencies": {
- "husky": "^8.0.2",
- "jest": "^27.5.1",
- "jest-extended": "^2.0.0",
- "jest-sorted": "^1.0.14",
- "pg-format": "^1.0.4"
-},
-"dependencies": {
- "dotenv": "^16.3.1",
- "ex": "^0.1.4",
- "express": "^4.18.2",
- "fs.promises": "^0.1.2",
- "pg": "^8.11.3",
- "supertest": "^6.3.3"
-},
-"jest": {
- "setupFilesAfterEnv": [
-   "jest-extended/all",
-   "jest-sorted"
- ]
-}
-```json
+- For development dependencies:
+  ```
+  npm install husky jest jest-extended jest-sorted pg-format --save-dev
+  ```
+
+- For dependencies:
+  ```
+  npm install dotenv ex express fs.promises pg supertest --save
+  ```
+
+3. All available scripts can be found in the `package.json`. It's recommended to run the "seed" script first to ensure the database is correctly seeded.
+
+4. To verify that the seeding has worked, follow these steps:
+
+- Open your command line interface (CLI).
+- Run the following commands:
 
 
 All available scripts can be found in the package.json. It's recommended to run the "seed" script first to ensure the database is correctly seeded.
