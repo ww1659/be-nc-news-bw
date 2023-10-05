@@ -44,22 +44,32 @@ npm init -y
 
 4. To verify that the seeding has worked, follow these steps:
 
-- Open your command line interface (CLI).
-- Run the following commands:
+ - Open your command line interface (CLI).
+ - Run the following commands:
 
-psql
+ ```
+ # Enter the psql shell
+ psql
 
-\l     # This command shows all databases on the local system.
+ # List all databases on the local system
+ \l
 
-\c nc_news    # This command connects to the database named nc_news.
+ # Connect to the database named nc_news
+ \c nc_news
 
-\dt    # This command shows all tables in the nc_news database. If you can't see any tables here, try running the seed again.
+ # List all tables in the nc_news database. If you can't see any tables here, try running the seed again.
+ \dt
 
-\q     # This command exits the psql shell.
+ # Exit the psql shell
+ \q
+ ```
 
-Once you've confirmed that the seeding is successful, you can start testing:
-npm test app
+5. Once you've confirmed that the seeding is successful, you can start testing:
 
-    This command tests your application (app.js) and all relevant endpoints. It also seeds the test database before each test.
+ - Run the following command to test your application (`app.js`) and all relevant endpoints. This command also seeds the test database before each test:
+
+ ```
+ npm test app
+ ```
 
 Cheers! You're now ready to use and test your Node API project.
