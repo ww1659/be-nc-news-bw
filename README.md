@@ -47,14 +47,6 @@ npm init -y
 - Open your command line interface (CLI).
 - Run the following commands:
 
-
-All available scripts can be found in the package.json. It's recommended to run the "seed" script first to ensure the database is correctly seeded.
-
-To verify that the seeding has worked, follow these steps:
-
-    Open your command line interface (CLI).
-    Run the following commands:
-
 psql
 \l     # This command shows all databases on the local system.
 \c nc_news    # This command connects to the database named nc_news.
