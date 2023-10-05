@@ -50,19 +50,19 @@ npm init -y
  - Run the following commands:
 
 ```
- # Enter the psql shell
+ Enter the psql shell
  psql
 
- # List all databases on the local system
+ List all databases on the local system
  \l
 
- # Connect to the database named nc_news
+ Connect to the database named nc_news
  \c nc_news
 
- # List all tables in the nc_news database. If you can't see any tables here, try running the seed again.
+ List all tables in the nc_news database. If you can't see any tables here, try running the seed again.
  \dt
 
- # Exit the psql shell
+ Exit the psql shell
  \q
 ```
 
