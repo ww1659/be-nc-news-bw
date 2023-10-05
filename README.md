@@ -25,10 +25,12 @@ This project is an initial attempt at building and deploying a Node API designed
 ## Instructions
 
 1. Initialize the project as a Node project:
-`npm init -y`
+```
+npm init -y
+```
 
 
-2. To install the required packages, run the following commands:
+3. To install the required packages, run the following commands:
 
 - For development dependencies:
   ```
