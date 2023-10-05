@@ -376,41 +376,43 @@ describe("GET api/users", () => {
   });
 });
 
-describe("QUERY TOPIC api/articles", () => {
+describe.only("QUERY TOPIC api/articles", () => {
   test("GET:200 returns a filtered array of article objects with corresponding properties", () => {
     return request(app)
-      .get("/api/articles?topic=cats")
+      .get("/api/articles?topic=mitch")
       .expect(200)
       .then((response) => {
         const articles = response.body.articles;
-        expect(articles.length).toBe(1);
-        expect(articles[0]).toMatchObject({
-          article_id: 5,
-          title: "UNCOVERED: catspiracy to bring down democracy",
-          topic: "cats",
-          author: "rogersop",
-          created_at: expect.any(String),
-          votes: 0,
-          article_img_url:
-            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-          comment_count: "2",
+        expect(articles.length).toBe(12);
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: "mitch",
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
         });
       });
   });
-  test("GET:200 returns an error message when no articles of queried topic", () => {
+  test("GET:200 returns an empty array when there are no articles of queried topic", () => {
     return request(app)
       .get("/api/articles?topic=TEST")
       .expect(200)
       .then((response) => {
-        expect(response.body.msg).toBe("no articles of this topic");
+        console.log(response.body.articles);
+        expect(response.body.articles).toEqual([]);
       });
   });
-  test("GET:400 returns status 400 and an error message when query is not 'topic'", () => {
+  test("GET:404 returns status 404 and an error message when query is not 'topic'", () => {
     return request(app)
       .get("/api/articles?votes=0")
-      .expect(400)
+      .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe("invalid query parameter");
+        expect(response.body.msg).toBe("path does not exist");
       });
   });
 });

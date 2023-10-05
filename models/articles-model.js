@@ -9,35 +9,26 @@ exports.fetchArticles = (query) => {
   ON a.article_id = c.article_id`;
 
   let endOfQuery = `
-  GROUP BY a.article_id, title, topic, a.author, a.created_at, a.votes, article_img_url
+  GROUP BY a.article_id
   ORDER BY a.created_at DESC
   ;`;
 
-  if (query.hasOwnProperty("topic")) {
-    fetchArticleQuery = baseQuery + ` WHERE a.topic = $1 ` + endOfQuery;
-    return db.query(fetchArticleQuery, [query.topic]).then((result) => {
-      const articles = result.rows;
-      if (articles.length === 0) {
-        return Promise.reject({
-          status: 200,
-          msg: "no articles of this topic",
-        });
-      } else {
-        return articles;
-      }
+  if (query && !query.topic) {
+    return Promise.reject({
+      status: 404,
+      msg: "path does not exist",
     });
-  } else if (Object.keys(query).length === 0) {
-    const fetchArticleQuery = baseQuery + endOfQuery;
-    return db.query(fetchArticleQuery).then((result) => {
+  }
+
+  const topic = query.hasOwnProperty("topic");
+  const fetchArticleQuery =
+    baseQuery + (topic ? ` WHERE a.topic = $1 ` : ``) + endOfQuery;
+  return db
+    .query(fetchArticleQuery, topic ? [query.topic] : [])
+    .then((result) => {
       const articles = result.rows;
       return articles;
     });
-  } else {
-    return Promise.reject({
-      status: 400,
-      msg: "invalid query parameter",
-    });
-  }
 };
 
 exports.selectArticle = (articleId) => {
