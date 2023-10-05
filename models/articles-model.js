@@ -13,7 +13,7 @@ exports.fetchArticles = (query) => {
   ORDER BY a.created_at DESC
   ;`;
 
-  if (query && !query.topic) {
+  if (Object.keys(query).length !== 0 && !query.topic) {
     return Promise.reject({
       status: 404,
       msg: "path does not exist",

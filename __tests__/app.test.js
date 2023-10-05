@@ -376,7 +376,7 @@ describe("GET api/users", () => {
   });
 });
 
-describe.only("QUERY TOPIC api/articles", () => {
+describe("QUERY TOPIC api/articles", () => {
   test("GET:200 returns a filtered array of article objects with corresponding properties", () => {
     return request(app)
       .get("/api/articles?topic=mitch")
@@ -403,7 +403,6 @@ describe.only("QUERY TOPIC api/articles", () => {
       .get("/api/articles?topic=TEST")
       .expect(200)
       .then((response) => {
-        console.log(response.body.articles);
         expect(response.body.articles).toEqual([]);
       });
   });
