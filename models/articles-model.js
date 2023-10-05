@@ -1,20 +1,34 @@
 const db = require("../db/connection");
 const { checkUserExists } = require("../db/seeds/utils");
 
-exports.fetchArticles = () => {
-  const fetchArticleQuery = `
+exports.fetchArticles = (query) => {
+  let baseQuery = `
   SELECT a.article_id, title, topic, a.author, a.created_at, a.votes, article_img_url, COUNT(comment_id) as comment_count
   FROM articles as a
   LEFT JOIN comments as c
-  ON a.article_id = c.article_id
-  GROUP BY a.article_id, title, topic, a.author, a.created_at, a.votes, article_img_url
+  ON a.article_id = c.article_id`;
+
+  let endOfQuery = `
+  GROUP BY a.article_id
   ORDER BY a.created_at DESC
   ;`;
 
-  return db.query(fetchArticleQuery).then((result) => {
-    const articles = result.rows;
-    return articles;
-  });
+  if (query && !query.topic) {
+    return Promise.reject({
+      status: 404,
+      msg: "path does not exist",
+    });
+  }
+
+  const topic = query.hasOwnProperty("topic");
+  const fetchArticleQuery =
+    baseQuery + (topic ? ` WHERE a.topic = $1 ` : ``) + endOfQuery;
+  return db
+    .query(fetchArticleQuery, topic ? [query.topic] : [])
+    .then((result) => {
+      const articles = result.rows;
+      return articles;
+    });
 };
 
 exports.selectArticle = (articleId) => {
