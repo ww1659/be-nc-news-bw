@@ -53,7 +53,7 @@ describe("GET api/articles", () => {
       .expect(200)
       .then((response) => {
         const articles = response.body.articles;
-        expect(articles.length).toBe(13);
+        expect(articles.length).toBe(10); // default PAGINATION
         expect(articles[0].comment_count).toBe("2");
         articles.forEach((article) => {
           expect(typeof article.article_id).toBe("number");
@@ -585,7 +585,7 @@ describe("QUERY TOPIC api/articles", () => {
       .expect(200)
       .then((response) => {
         const articles = response.body.articles;
-        expect(articles.length).toBe(12);
+        expect(articles.length).toBe(10); //default Pagination
         articles.forEach((article) => {
           expect(article).toMatchObject({
             article_id: expect.any(Number),
@@ -600,15 +600,15 @@ describe("QUERY TOPIC api/articles", () => {
         });
       });
   });
-  test("GET:200 returns an empty array when there are no articles of queried topic", () => {
+  test("GET:200 returns an empty array when there are no articles of valid topic", () => {
     return request(app)
-      .get("/api/articles?topic=TEST")
+      .get("/api/articles?topic=paper")
       .expect(200)
       .then((response) => {
         expect(response.body.articles).toEqual([]);
       });
   });
-  test("GET:404 returns status 404 and an error message when query is not 'topic'", () => {
+  test("GET:404 returns status 404 and an error message when query is not valid", () => {
     return request(app)
       .get("/api/articles?votes=0")
       .expect(404)
@@ -665,7 +665,7 @@ describe("SORT / ORDER api/articles", () => {
       .get("/api/articles?sort_by=JOB")
       .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe("invalid sorting parameter");
+        expect(response.body.msg).toBe("path does not exist");
       });
   });
   test("GET:404 returns 404 and error message when invalid ordering parameter is passed", () => {
@@ -673,7 +673,108 @@ describe("SORT / ORDER api/articles", () => {
       .get("/api/articles?order=UP")
       .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe("invalid ordering parameter");
+        expect(response.body.msg).toBe("path does not exist");
+      });
+  });
+});
+
+describe.only("QUERY PAGINATION api/articles", () => {
+  test("GET:200 returns an limited array of article objects (limit = 3)", () => {
+    return request(app)
+      .get("/api/articles?limit=3&p=1")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        const total_count = response.body.total_count;
+        expect(articles[0]).toMatchObject({
+          article_id: 3,
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          created_at: expect.any(String),
+          votes: 0,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: "2",
+        });
+        expect(articles[3]).toBe(undefined);
+        expect(total_count).toBe(3);
+      });
+  });
+  test("GET:200 returns an limited array (length 10) of article objects when limit is not defined", () => {
+    return request(app)
+      .get("/api/articles?limit=&p=1")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        const total_count = response.body.total_count;
+        expect(articles.length).toBe(10);
+        expect(total_count).toBe(10);
+      });
+  });
+  test("GET:200 returns an limited array starting at the first page when p is not defined", () => {
+    return request(app)
+      .get("/api/articles?limit=4&sort_by=article_id&order=ASC")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        const total_count = response.body.total_count;
+        expect(articles[0].article_id).toBe(1);
+        expect(articles[1].article_id).toBe(2);
+        expect(articles[2].article_id).toBe(3);
+        expect(articles[3].article_id).toBe(4);
+        expect(total_count).toBe(4);
+      });
+  });
+  test("GET:200 returns all article objects when limit is greater than the number of articles", () => {
+    return request(app)
+      .get("/api/articles?limit=20&p=1")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        const total_count = response.body.total_count;
+        expect(articles.length).toBe(13);
+        expect(total_count).toBe(13);
+      });
+  });
+  test("GET:200 returns limited article objects starting at the offset", () => {
+    return request(app)
+      .get("/api/articles?limit=3&p=3&sort_by=article_id&order=ASC")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        const total_count = response.body.total_count;
+        expect(articles[0].article_id).toBe(7);
+        expect(articles[1].article_id).toBe(8);
+        expect(articles[2].article_id).toBe(9);
+        expect(total_count).toBe(3);
+      });
+  });
+  test("GET:200 returns limited article objects starting at the offset when exceeding the number of articles", () => {
+    return request(app)
+      .get("/api/articles?limit=4&p=4&sort_by=article_id&order=ASC")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        const total_count = response.body.total_count;
+        expect(articles[0].article_id).toBe(13);
+        expect(total_count).toBe(1);
+      });
+  });
+  test("GET:400 returns error status and message when limit is not valid", () => {
+    return request(app)
+      .get("/api/articles?limit=pint&p=0")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("invalid query");
+      });
+  });
+  test("GET:400 returns error status and message when p is not valid", () => {
+    return request(app)
+      .get("/api/articles?limit=3&p=twelve")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("invalid query");
       });
   });
 });

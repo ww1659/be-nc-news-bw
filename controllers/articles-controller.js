@@ -6,16 +6,22 @@ const {
   updateArticleVotes,
   enterArticle,
 } = require("../models/articles-model");
-const { enterNewTopic } = require("../models/topics-model");
+const { enterNewTopic, fetchTopics } = require("../models/topics-model");
 const { checkUserExists, enterNewUser } = require("../models/users-model");
 
 exports.getArticles = (req, res, next) => {
   const query = req.query;
-  fetchArticles(query)
+
+  return fetchTopics()
+    .then((topics) => {
+      return fetchArticles(query, topics);
+    })
     .then((articles) => {
-      res.status(200).send({ articles });
+      const total_count = articles.length;
+      res.status(200).send({ articles, total_count });
     })
     .catch((err) => {
+      console.log(err);
       next(err);
     });
 };

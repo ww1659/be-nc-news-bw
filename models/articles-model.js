@@ -1,8 +1,10 @@
+const { off } = require("../app");
 const db = require("../db/connection");
+const { forEach } = require("../db/data/test-data/articles");
 const { checkUserExists } = require("../db/seeds/utils");
 const format = require("pg-format");
 
-exports.fetchArticles = (query) => {
+exports.fetchArticles = (query, topics) => {
   const validSortBys = {
     article_id: "article_id",
     title: "title",
@@ -15,8 +17,35 @@ exports.fetchArticles = (query) => {
   };
   const validOrderBys = {
     asc: "ASC",
+    ASC: "ASC",
     desc: "DESC",
+    DESC: "DESC",
   };
+  const validTopics = topics.map((topic) => topic.slug);
+
+  let isValidQuery = false;
+  for (const key in query) {
+    if (
+      key === "sort_by" ||
+      key === "order" ||
+      key === "topic" ||
+      key === "p" ||
+      key === "limit"
+    ) {
+      isValidQuery = true;
+    }
+  }
+
+  const isValidTopic = validTopics.includes(query.topic);
+
+  let limit = 10;
+  if (query.limit && query.limit !== null) {
+    limit = query.limit;
+  }
+  let offset = 0;
+  if (query.p && query.p !== null) {
+    offset = (query.p - 1) * limit;
+  }
 
   const baseQuery = `
   SELECT a.article_id, title, topic, a.author, a.created_at, a.votes, article_img_url, COUNT(comment_id) as comment_count
@@ -24,64 +53,39 @@ exports.fetchArticles = (query) => {
   LEFT JOIN comments as c
   ON a.article_id = c.article_id`;
   const groupByQuery = `
-  GROUP BY a.article_id
-  `;
-  const orderByQuery = `
-  ORDER BY created_at DESC
-  ;`;
+  GROUP BY a.article_id`;
+  const limitQuery = `
+  LIMIT ${limit}
+  OFFSET ${offset};`;
 
-  if (
-    Object.keys(query).length !== 0 &&
-    !query.topic &&
-    !query.sort_by &&
-    !query.order
-  ) {
+  let fetchArticlesQuery = `${baseQuery}`;
+  if (query.topic && isValidTopic) {
+    fetchArticlesQuery += ` WHERE a.topic = '${query.topic}'`;
+  }
+  fetchArticlesQuery += `${groupByQuery} ORDER BY`;
+  if (query.sort_by && validSortBys[query.sort_by]) {
+    fetchArticlesQuery += ` ${query.sort_by}`;
+  } else {
+    fetchArticlesQuery += ` created_at`;
+  }
+  if (query.order && validOrderBys[query.order]) {
+    fetchArticlesQuery += ` ${query.order}`;
+  } else {
+    fetchArticlesQuery += ` DESC`;
+  }
+  fetchArticlesQuery += `${limitQuery}`;
+
+  if (isValidQuery || Object.keys(query).length === 0) {
+    return db.query(fetchArticlesQuery).then((result) => {
+      const articles = result.rows;
+      return articles;
+    });
+  } else {
     return Promise.reject({
       status: 404,
       msg: "path does not exist",
     });
   }
-
-  const queryKey = Object.keys(query)[0];
-
-  let fetchArticlesQuery =
-    baseQuery +
-    (queryKey === "topic" ? ` WHERE a.topic = $1 ` : ``) +
-    groupByQuery +
-    orderByQuery;
-
-  if (queryKey === "sort_by") {
-    if (validSortBys[query.sort_by]) {
-      fetchArticlesQuery =
-        baseQuery +
-        groupByQuery +
-        `ORDER BY ${validSortBys[query.sort_by]} DESC;`;
-    } else {
-      return Promise.reject({
-        status: 404,
-        msg: "invalid sorting parameter",
-      });
-    }
-  } else if (queryKey === "order") {
-    if (validOrderBys[query.order]) {
-      fetchArticlesQuery =
-        baseQuery +
-        groupByQuery +
-        `ORDER BY created_at ${validOrderBys[query.order]};`;
-    } else {
-      return Promise.reject({
-        status: 404,
-        msg: "invalid ordering parameter",
-      });
-    }
-  }
-
-  return db
-    .query(fetchArticlesQuery, queryKey === "topic" ? [query.topic] : [])
-    .then((result) => {
-      const articles = result.rows;
-      return articles;
-    });
 };
 
 exports.selectArticle = (articleId) => {
