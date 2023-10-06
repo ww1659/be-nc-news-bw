@@ -73,3 +73,15 @@ exports.updateCommentVotes = (commentId, newVote) => {
     });
   }
 };
+
+exports.removeArticleByArticleId = (articleId) => {
+  const removeCommentQuery = `
+  DELETE FROM comments 
+  WHERE article_id = $1 
+  RETURNING *
+  ;`;
+
+  return db.query(removeCommentQuery, [articleId]).then((result) => {
+    return result.rows;
+  });
+};

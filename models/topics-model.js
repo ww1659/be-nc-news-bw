@@ -7,16 +7,28 @@ exports.fetchTopics = () => {
   });
 };
 
-// exports.enterNewTopic = async (newTopic) => {
-//   const enterNewTopicQuery = `
-//   INSERT INTO topics
-//   (slug)
-//   VALUES
-//   ($1)
-//   RETURNING *;
-//   `;
-//   await db.query(enterNewTopicQuery, [newTopic]).then(({ rows }) => {
-//     const newTopic = rows;
-//     return newTopic;
-//   });
-// };
+exports.enterNewTopic = (newTopic) => {
+  let validPost = true;
+  for (const key in newTopic) {
+    if (key !== "slug" && key !== "description") {
+      validPost = false;
+    }
+  }
+  if (!validPost) {
+    return Promise.reject({ status: 400, msg: "invalid post" });
+  }
+
+  const enterNewTopicQuery = `
+  INSERT INTO topics
+  (slug, description)
+  VALUES
+  ($1, $2)
+  RETURNING *;
+  `;
+  return db
+    .query(enterNewTopicQuery, [newTopic.slug, newTopic.description])
+    .then(({ rows }) => {
+      const newTopic = rows;
+      return newTopic;
+    });
+};

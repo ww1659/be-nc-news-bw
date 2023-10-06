@@ -11,7 +11,7 @@
   },
   "GET /api/articles": {
     "description": "serves an array of all articles",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": ["topic", "sort_by", "order"],
     "exampleResponse": {
       "articles": [
         {
@@ -65,6 +65,68 @@
       ]
     }
   },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "butter_bridge",
+          "name": "jonny",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        },
+        {
+          "username": "icellusedkars",
+          "name": "sam",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+        }
+      ]
+    }
+  },
+  "GET /api/users/:username": {
+    "description": "returns the specified user",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "butter_bridge",
+          "name": "jonny",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        }
+      ]
+    }
+  },
+  "POST /api/articles": {
+    "description": "inserts new article to the DB and returns this article",
+    "queries": [],
+    "exampleResponse": {
+      "article": [
+        {
+          "article_id": 14,
+          "author": "butter_bridge",
+          "title": "BigGymFreakz",
+          "body": "Billeh has started going to the gym to get healthy for tennis",
+          "topic": "cats",
+          "votes": "0",
+          "created_at": "today's date",
+          "comment_count": "0",
+          "article_img_url": "any image"
+        }
+      ]
+    }
+  },
+  "POST /api/topics": {
+    "description": "inserts a new topic to the DB and returns the topic",
+    "queries": [],
+    "exampleResponse": {
+      "topic": [
+        {
+          "slug": "TEST topic name here",
+          "description": "TEST description here"
+        }
+      ]
+    }
+  },
   "POST /api/articles/:article_id/comments": {
     "description": "inserts a user submitted comment to the DB and returns the comment",
     "queries": [],
@@ -98,27 +160,29 @@
       ]
     }
   },
+  "PATCH /api/comments/:comment_id/": {
+    "description": "updates the votes for a comment and returns this updated comment",
+    "queries": [{ "incVotes": 5 }],
+    "exampleResponse": {
+      "comment": [
+        {
+          "body": " I carry a log — yes. Is it funny to you? It is not to me.",
+          "votes": 10,
+          "author": "icellusedkars",
+          "article_id": 1,
+          "created_at": "10th October 1999"
+        }
+      ]
+    }
+  },
   "DELETE /api/comments/:comment_id/": {
     "description": "deletes a comment and returns status 204 with no response object",
     "queries": [],
     "exampleResponse": {}
   },
-  "GET /api/users": {
-    "description": "serves an array of all users",
+  "DELETE /api/comments/:article_id/": {
+    "description": "deletes an article and corresponding comments and returns status 204 with no response object",
     "queries": [],
-    "exampleResponse": {
-      "users": [
-        {
-          "username": "butter_bridge",
-          "name": "jonny",
-          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
-        },
-        {
-          "username": "icellusedkars",
-          "name": "sam",
-          "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
-        }
-      ]
-    }
+    "exampleResponse": {}
   }
 }

@@ -5,7 +5,9 @@ const {
   enterComment,
   updateArticleVotes,
   enterArticle,
+  removeArticle,
 } = require("../models/articles-model");
+const { removeArticleByArticleId } = require("../models/comments-model");
 const { enterNewTopic, fetchTopics } = require("../models/topics-model");
 const { checkUserExists, enterNewUser } = require("../models/users-model");
 
@@ -21,7 +23,6 @@ exports.getArticles = (req, res, next) => {
       res.status(200).send({ articles, total_count });
     })
     .catch((err) => {
-      console.log(err);
       next(err);
     });
 };
@@ -39,14 +40,15 @@ exports.getArticleById = (req, res, next) => {
 
 exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
+  const query = req.query;
 
-  return Promise.all([
-    selectArticle(article_id),
-    selectCommentsByArticleId(article_id),
-  ])
-    .then((results) => {
-      const comments = results[1];
-      res.status(200).send({ comments });
+  return selectArticle(article_id)
+    .then(() => {
+      return selectCommentsByArticleId(query, article_id);
+    })
+    .then((comments) => {
+      const comment_count = comments.length;
+      res.status(200).send({ comments, comment_count });
     })
     .catch((err) => {
       next(err);
@@ -100,6 +102,21 @@ exports.postArticle = (req, res, next) => {
     })
     .then((newArticle) => {
       res.status(201).send({ newArticle });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.deleteArticleById = (req, res, next) => {
+  const { article_id } = req.params;
+
+  return removeArticleByArticleId(article_id)
+    .then((removedComments) => {
+      return removeArticle(article_id);
+    })
+    .then((removedArticle) => {
+      res.status(204).send();
     })
     .catch((err) => {
       next(err);

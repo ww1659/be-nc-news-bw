@@ -1,15 +1,18 @@
 exports.psqlErrors = (err, req, res, next) => {
   if (err.code === "22P02") {
-    if (res.req.method === "DELETE") {
-      res.status(400).send({ msg: "invalid comment id" });
-    }
-    res.status(400).send({ msg: "Invalid Article Id" });
+    res.status(400).send({ msg: "invalid id" });
   } else if (err.code === "42601") {
     res.status(400).send({ msg: "invalid post query" });
   } else if (err.code === "23503") {
     res.status(400).send({ msg: "invalid query" });
   } else if (err.code === "42703") {
     res.status(400).send({ msg: "invalid query" });
+  } else if (err.code === "2201W") {
+    res.status(400).send({ msg: "limit must be a positive number" });
+  } else if (err.code === "23502") {
+    res.status(400).send({ msg: "invalid query" });
+  } else if (err.code === "23505") {
+    res.status(422).send({ msg: "topic already exists" });
   }
   next(err);
 };

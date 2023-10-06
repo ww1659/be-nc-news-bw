@@ -63,13 +63,21 @@ exports.fetchArticles = (query, topics) => {
     fetchArticlesQuery += ` WHERE a.topic = '${query.topic}'`;
   }
   fetchArticlesQuery += `${groupByQuery} ORDER BY`;
-  if (query.sort_by && validSortBys[query.sort_by]) {
-    fetchArticlesQuery += ` ${query.sort_by}`;
+  if (query.sort_by) {
+    if (validSortBys[query.sort_by]) {
+      fetchArticlesQuery += ` ${query.sort_by}`;
+    } else {
+      return Promise.reject({ status: 404, msg: "invalid sort_by parameter" });
+    }
   } else {
     fetchArticlesQuery += ` created_at`;
   }
-  if (query.order && validOrderBys[query.order]) {
-    fetchArticlesQuery += ` ${query.order}`;
+  if (query.order) {
+    if (validOrderBys[query.order]) {
+      fetchArticlesQuery += ` ${query.order}`;
+    } else {
+      return Promise.reject({ status: 404, msg: "invalid order parameter" });
+    }
   } else {
     fetchArticlesQuery += ` DESC`;
   }
@@ -111,12 +119,23 @@ exports.selectArticle = (articleId) => {
   });
 };
 
-exports.selectCommentsByArticleId = (articleId) => {
+exports.selectCommentsByArticleId = ({ limit = 10, p }, articleId) => {
+  let offset = 0;
+  if (typeof p === "number" && p > 0) {
+    offset = (query.p - 1) * limit;
+  }
+
+  if (limit === "0") {
+    return Promise.reject({ status: 400, msg: "limit must be greater than 0" });
+  }
+
   const getCommentsQuery = `
   SELECT *
   FROM comments as c
   WHERE c.article_id = $1
   ORDER BY c.created_at DESC
+  LIMIT ${limit}
+  OFFSET ${offset}
   ;`;
 
   return db.query(getCommentsQuery, [articleId]).then((result) => {
@@ -224,5 +243,24 @@ exports.enterArticle = (newArticle) => {
 
   return db.query(postArticleQuery).then((result) => {
     return result.rows;
+  });
+};
+
+exports.removeArticle = (articleId) => {
+  const removeArticleQuery = `
+  DELETE FROM articles 
+  WHERE article_id = $1 
+  RETURNING *
+  ;`;
+
+  return db.query(removeArticleQuery, [articleId]).then((result) => {
+    if (result.rows.length === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: "article does not exist",
+      });
+    } else {
+      return result.rows;
+    }
   });
 };
