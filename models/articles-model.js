@@ -48,7 +48,8 @@ exports.fetchArticles = (query, topics) => {
   }
 
   const baseQuery = `
-  SELECT a.article_id, title, topic, a.author, a.created_at, a.votes, article_img_url, COUNT(comment_id) as comment_count
+  SELECT a.article_id, title, topic, a.author, a.created_at, a.votes, article_img_url, 
+  COUNT(comment_id) as comment_count, COUNT(*) OVER() AS full_count
   FROM articles as a
   LEFT JOIN comments as c
   ON a.article_id = c.article_id`;

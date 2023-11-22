@@ -19,7 +19,12 @@ exports.getArticles = (req, res, next) => {
       return fetchArticles(query, topics);
     })
     .then((articles) => {
-      const total_count = articles.length;
+      let total_count;
+      if (articles.length !== 0) {
+        total_count = Number(articles[0].full_count);
+      } else {
+        total_count = 0;
+      }
       res.status(200).send({ articles, total_count });
     })
     .catch((err) => {

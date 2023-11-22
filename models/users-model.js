@@ -38,17 +38,3 @@ exports.checkUserExists = async (username) => {
   }
   return newUserExists;
 };
-
-// exports.enterNewUser = async (name) => {
-//   const enterNewUserQuery = `
-//   INSERT INTO users
-//   (name, username)
-//   VALUES
-//   ($1, $2)
-//   RETURNING *;
-//   `;
-//   await db.query(enterNewUserQuery, [name, name]).then(({ rows }) => {
-//     const newUser = rows;
-//     return newUser;
-//   });
-// };

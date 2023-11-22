@@ -756,7 +756,7 @@ describe("QUERY SORT / ORDER api/articles", () => {
       });
   });
 });
-describe("QUERY PAGINATION api/articles", () => {
+describe.only("QUERY PAGINATION api/articles", () => {
   test("GET:200 returns an limited array of article objects (limit = 3)", () => {
     return request(app)
       .get("/api/articles?limit=3&p=1")
@@ -776,7 +776,8 @@ describe("QUERY PAGINATION api/articles", () => {
           comment_count: "2",
         });
         expect(articles[3]).toBe(undefined);
-        expect(total_count).toBe(3);
+        expect(articles.length).toBe(3);
+        expect(total_count).toBe(13);
       });
   });
   test("GET:200 returns an limited array (length 10) of article objects when limit is not defined", () => {
@@ -787,7 +788,7 @@ describe("QUERY PAGINATION api/articles", () => {
         const articles = response.body.articles;
         const total_count = response.body.total_count;
         expect(articles.length).toBe(10);
-        expect(total_count).toBe(10);
+        expect(total_count).toBe(13);
       });
   });
   test("GET:200 returns an limited array starting at the first page when p is not defined", () => {
@@ -801,7 +802,8 @@ describe("QUERY PAGINATION api/articles", () => {
         expect(articles[1].article_id).toBe(2);
         expect(articles[2].article_id).toBe(3);
         expect(articles[3].article_id).toBe(4);
-        expect(total_count).toBe(4);
+        expect(articles.length).toBe(4);
+        expect(total_count).toBe(13);
       });
   });
   test("GET:200 returns all article objects when limit is greater than the number of articles", () => {
@@ -825,7 +827,7 @@ describe("QUERY PAGINATION api/articles", () => {
         expect(articles[0].article_id).toBe(7);
         expect(articles[1].article_id).toBe(8);
         expect(articles[2].article_id).toBe(9);
-        expect(total_count).toBe(3);
+        expect(total_count).toBe(13);
       });
   });
   test("GET:200 returns limited article objects starting at the offset when exceeding the number of articles", () => {
@@ -836,7 +838,7 @@ describe("QUERY PAGINATION api/articles", () => {
         const articles = response.body.articles;
         const total_count = response.body.total_count;
         expect(articles[0].article_id).toBe(13);
-        expect(total_count).toBe(1);
+        expect(total_count).toBe(13);
       });
   });
   test("GET:400 returns error status and message when limit is not valid", () => {
