@@ -756,7 +756,7 @@ describe("QUERY SORT / ORDER api/articles", () => {
       });
   });
 });
-describe.only("QUERY PAGINATION api/articles", () => {
+describe("QUERY PAGINATION api/articles", () => {
   test("GET:200 returns an limited array of article objects (limit = 3)", () => {
     return request(app)
       .get("/api/articles?limit=3&p=1")
