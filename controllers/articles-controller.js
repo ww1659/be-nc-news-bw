@@ -52,8 +52,13 @@ exports.getCommentsByArticleId = (req, res, next) => {
       return selectCommentsByArticleId(query, article_id);
     })
     .then((comments) => {
-      const comment_count = comments.length;
-      res.status(200).send({ comments, comment_count });
+      let commentCount;
+      if (comments.length !== 0 && comments.length !== undefined) {
+        commentCount = Number(comments[0].full_count);
+      } else {
+        commentCount = 0;
+      }
+      res.status(200).send({ comments, commentCount });
     })
     .catch((err) => {
       next(err);

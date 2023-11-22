@@ -131,7 +131,7 @@ exports.selectCommentsByArticleId = ({ limit = 10, p }, articleId) => {
   }
 
   const getCommentsQuery = `
-  SELECT *
+  SELECT *, COUNT(*) OVER() AS full_count
   FROM comments as c
   WHERE c.article_id = $1
   ORDER BY c.created_at DESC

@@ -118,13 +118,15 @@ describe("GET api/articles/:article_id/comments", () => {
       .expect(200)
       .then((response) => {
         const comments = response.body.comments;
+        const commentCount = response.body.commentCount;
+        expect(commentCount).toBe(2);
         expect(comments.length).toBe(2);
         comments.forEach((comment) => {
           expect(comment.article_id).toEqual(5);
         });
       });
   });
-  test("GET:200 returns status 200 and error message for an valid article with no comments", () => {
+  test("GET:200 returns status 200 and error message for a valid article with no comments", () => {
     return request(app)
       .get("/api/articles/2/comments")
       .expect(200)
@@ -865,7 +867,7 @@ describe("QUERY PAGINATION api/articles/:article_id/comments", () => {
       .expect(200)
       .then((response) => {
         const comments = response.body.comments;
-        const comment_count = response.body.comment_count;
+        const commentCount = response.body.commentCount;
         expect(comments[0]).toMatchObject({
           comment_id: 15,
           body: "I am 100% sure that we're not completely sure.",
@@ -874,7 +876,8 @@ describe("QUERY PAGINATION api/articles/:article_id/comments", () => {
           votes: 1,
           created_at: expect.any(String),
         });
-        expect(comment_count).toBe(2);
+        expect(comments.length).toBe(2);
+        expect(commentCount).toBe(2);
       });
   });
   test("GET:200 returns limited array of comments when p is not provided, defaulting at the first page", () => {
@@ -883,7 +886,7 @@ describe("QUERY PAGINATION api/articles/:article_id/comments", () => {
       .expect(200)
       .then((response) => {
         const comments = response.body.comments;
-        const comment_count = response.body.comment_count;
+        const commentCount = response.body.commentCount;
         expect(comments[0]).toMatchObject({
           comment_id: 5,
           body: "I hate streaming noses",
@@ -892,7 +895,8 @@ describe("QUERY PAGINATION api/articles/:article_id/comments", () => {
           votes: 0,
           created_at: "2020-11-03T21:00:00.000Z",
         });
-        expect(comment_count).toBe(4);
+        expect(comments.length).toBe(4);
+        expect(commentCount).toBe(11);
       });
   });
   test("GET:200 returns limited array of comments when p is invalid - offset defaults to 0", () => {
@@ -900,8 +904,10 @@ describe("QUERY PAGINATION api/articles/:article_id/comments", () => {
       .get("/api/articles/1/comments?limit=3&p=donkey")
       .expect(200)
       .then((response) => {
-        const comment_count = response.body.comment_count;
-        expect(comment_count).toBe(3);
+        const comments = response.body.comments;
+        const commentCount = response.body.commentCount;
+        expect(comments.length).toBe(3);
+        expect(commentCount).toBe(11);
       });
   });
   test("GET:400 returns error status and message when limit is not a positive number", () => {
