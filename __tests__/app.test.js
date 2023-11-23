@@ -470,7 +470,7 @@ describe("POST /api/topics", () => {
   });
 });
 describe("POST api/login", () => {
-  test("POST:200 returns a boolean of true and user object when valid user credientials passed through", () => {
+  test.only("POST:200 returns a boolean of true and user object when valid user credientials passed through", () => {
     const testUser = {
       name: "paul",
       username: "rogersop",
@@ -480,6 +480,7 @@ describe("POST api/login", () => {
       .send(testUser)
       .expect(200)
       .then((response) => {
+        console.log(response.body);
         expect(response.body.valid).toBe(true);
         expect(response.body.user[0]).toMatchObject({
           username: "rogersop",
