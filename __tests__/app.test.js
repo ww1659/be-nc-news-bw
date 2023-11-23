@@ -470,7 +470,7 @@ describe("POST /api/topics", () => {
   });
 });
 describe("POST api/login", () => {
-  test.only("POST:200 returns a boolean of true and user object when valid user credientials passed through", () => {
+  test("POST:200 returns a boolean of true and user object when valid user credientials passed through", () => {
     const testUser = {
       name: "paul",
       username: "rogersop",
