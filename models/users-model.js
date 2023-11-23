@@ -38,3 +38,33 @@ exports.checkUserExists = async (username) => {
   }
   return newUserExists;
 };
+
+exports.checkValidUser = (name, username) => {
+  if (!username && !name) {
+    return Promise.reject({ status: 400, msg: "no credentials provided" });
+  }
+
+  if (!name) {
+    return Promise.reject({ status: 400, msg: "no name provided" });
+  }
+
+  if (!username) {
+    return Promise.reject({ status: 400, msg: "no username provided" });
+  }
+
+  const checkUserExistsQuery = `
+  SELECT * 
+  FROM users 
+  WHERE users.name = $1
+  AND users.username = $2;
+  `;
+
+  return db.query(checkUserExistsQuery, [name, username]).then((result) => {
+    const user = result.rows;
+    if (user.length === 0) {
+      return Promise.reject({ status: 404, msg: "user does not exist" });
+    } else {
+      return user;
+    }
+  });
+};
